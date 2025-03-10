@@ -40,8 +40,14 @@ const Register = () => {
     stationName: '',
   });
 
+  // Updated to log the event and ensure state updates properly
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    console.log(`Updating ${name} to: ${value}`); // Debug log
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
   const validateForm = () => {
@@ -63,6 +69,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Form submission data:", formData); // Debug log
     if (!validateForm()) return;
 
     try {
@@ -98,6 +105,7 @@ const Register = () => {
           }
         };
 
+      console.log("Sending payload:", payload); // Debug log
       await axios.post(endpoint, payload);
       toast.success('Registration successful!', {
         style: {
@@ -111,6 +119,7 @@ const Register = () => {
       });
       navigate('/login');
     } catch (error) {
+      console.error("Registration error:", error); // Debug log
       toast.error(error.response?.data?.message || 'Registration failed', {
         style: {
           background: '#FF6B6B',
@@ -125,18 +134,6 @@ const Register = () => {
       setLoading(false);
     }
   };
-
-  const InputWithIcon = ({ icon: Icon, ...props }) => (
-    <div className="relative">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <Icon className="text-gray-400" size={20} />
-      </div>
-      <input
-        {...props}
-        className="w-full pl-10 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-orange-500 outline-none"
-      />
-    </div>
-  );
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-orange-50 p-4">
@@ -165,6 +162,7 @@ const Register = () => {
                   ? 'bg-orange-500 text-white shadow-lg' 
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}
               `}
+              type="button"
             >
               {registerType === 'society' 
                 ? <><Building2 className="mr-2" size={20} /> Society</> 
@@ -181,27 +179,39 @@ const Register = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 {type === 'society' ? 'Society Name' : 'Station Name'}
               </label>
-              <InputWithIcon 
-                icon={type === 'society' ? Home : Building2}
-                type="text"
-                name={type === 'society' ? 'name' : 'stationName'}
-                onChange={handleChange}
-                required
-                placeholder={type === 'society' ? 'Enter Society Name' : 'Enter Station Name'}
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  {type === 'society' ? <Home className="text-gray-400" size={20} /> : <Building2 className="text-gray-400" size={20} />}
+                </div>
+                <input
+                  type="text"
+                  name={type === 'society' ? 'name' : 'stationName'}
+                  value={type === 'society' ? formData.name : formData.stationName}
+                  onChange={handleChange}
+                  required
+                  placeholder={type === 'society' ? 'Enter Society Name' : 'Enter Station Name'}
+                  className="w-full pl-10 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-orange-500 outline-none"
+                />
+              </div>
             </div>
 
             {/* Email Input */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-              <InputWithIcon 
-                icon={Mail}
-                type="email"
-                name="email"
-                onChange={handleChange}
-                required
-                placeholder="Enter email address"
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="text-gray-400" size={20} />
+                </div>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter email address"
+                  className="w-full pl-10 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-orange-500 outline-none"
+                />
+              </div>
             </div>
 
             {/* Secretary Name (Society Only) */}
@@ -210,92 +220,134 @@ const Register = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Secretary Name
                 </label>
-                <InputWithIcon 
-                  icon={User}
-                  type="text"
-                  name="secretaryName"
-                  onChange={handleChange}
-                  required
-                  placeholder="Enter Secretary Name"
-                />
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <User className="text-gray-400" size={20} />
+                  </div>
+                  <input
+                    type="text"
+                    name="secretaryName"
+                    value={formData.secretaryName}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter Secretary Name"
+                    className="w-full pl-10 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-orange-500 outline-none"
+                  />
+                </div>
               </div>
             )}
 
             {/* Phone Input */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-              <InputWithIcon 
-                icon={Phone}
-                type="tel"
-                name="phone"
-                onChange={handleChange}
-                required
-                placeholder="Enter phone number"
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Phone className="text-gray-400" size={20} />
+                </div>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter phone number"
+                  className="w-full pl-10 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-orange-500 outline-none"
+                />
+              </div>
             </div>
 
             {/* Address Inputs */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
-              <InputWithIcon 
-                icon={MapPinned}
-                type="text"
-                name="address"
-                onChange={handleChange}
-                required
-                placeholder="Enter full address"
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <MapPinned className="text-gray-400" size={20} />
+                </div>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter full address"
+                  className="w-full pl-10 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-orange-500 outline-none"
+                />
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Area</label>
-              <InputWithIcon 
-                icon={MapPin}
-                type="text"
-                name="area"
-                onChange={handleChange}
-                required
-                placeholder="Enter area"
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <MapPin className="text-gray-400" size={20} />
+                </div>
+                <input
+                  type="text"
+                  name="area"
+                  value={formData.area}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter area"
+                  className="w-full pl-10 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-orange-500 outline-none"
+                />
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
-              <InputWithIcon 
-                icon={MapPin}
-                type="text"
-                name="city"
-                onChange={handleChange}
-                required
-                placeholder="Enter city name"
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <MapPin className="text-gray-400" size={20} />
+                </div>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter city name"
+                  className="w-full pl-10 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-orange-500 outline-none"
+                />
+              </div>
             </div>
 
             {/* Password Inputs */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-              <InputWithIcon 
-                icon={Lock}
-                type="password"
-                name="password"
-                onChange={handleChange}
-                required
-                placeholder="Enter password"
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="text-gray-400" size={20} />
+                </div>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter password"
+                  className="w-full pl-10 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-orange-500 outline-none"
+                />
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Confirm Password
               </label>
-              <InputWithIcon 
-                icon={Lock}
-                type="password"
-                name="confirmPassword"
-                onChange={handleChange}
-                required
-                placeholder="Confirm password"
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="text-gray-400" size={20} />
+                </div>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  placeholder="Confirm password"
+                  className="w-full pl-10 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-orange-500 outline-none"
+                />
+              </div>
             </div>
           </div>
 
